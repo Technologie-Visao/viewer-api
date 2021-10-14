@@ -1,5 +1,10 @@
-export declare type NumberParseable = (number | string | boolean) & {
-    readonly isNumberParseble: unique symbol;
-};
-export declare const isNumberParseable: (value: unknown) => value is NumberParseable;
+export declare class Visao {
+    private readonly id;
+    private readonly viewerElement;
+    constructor(id: string);
+    showModelVariant(modelVariant: string): void;
+    startAR(): void;
+    private executeAction;
+    private logInvalidViewerElement;
+}
 //# sourceMappingURL=index.d.ts.map
