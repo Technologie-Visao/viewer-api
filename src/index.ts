@@ -1,22 +1,28 @@
-enum ViewerAPIMessage {
+export enum ViewerAPIMessage {
   START_AR = 'START_AR',
   UPDATE_VARIANT = 'UPDATE_VARIANT',
+  UPDATE_LANGUAGE = 'UPDATE_LANGUAGE',
 }
 
-interface UpdateVariantPayload {
+export interface UpdateLanguagePayload {
+  language: string;
+}
+
+export interface UpdateModelVariantPayload {
   modelVariant: string;
 }
 
-type Payload = UpdateVariantPayload;
+export type Payload = UpdateModelVariantPayload | UpdateLanguagePayload;
 
-interface Message {
+export interface Message {
   type: ViewerAPIMessage;
   payload?: Payload;
 }
+export type ViewerElement = HTMLIFrameElement | null;
 
 export class Visao {
-  private readonly id: string;
-  private readonly viewerElement: HTMLIFrameElement | null;
+  private id: string;
+  private viewerElement: ViewerElement;
 
   constructor(id: string) {
     this.id = id;
@@ -24,8 +30,25 @@ export class Visao {
     this.logInvalidViewerElement();
   }
 
+  public setViewerElementFromId(id: string): void {
+    this.id = id;
+    this.viewerElement = document.getElementById(id) as HTMLIFrameElement;
+  }
+
+  public setViewerElement(viewerElement: ViewerElement): void {
+    this.viewerElement = viewerElement;
+  }
+
+  public changeLanguage(language: string): void {
+    this.executeAction({
+      type: ViewerAPIMessage.UPDATE_LANGUAGE,
+      payload: {
+        language,
+      },
+    });
+  }
+
   public showModelVariant(modelVariant: string): void {
-    console.log('CALLING show model variant!');
     this.executeAction({
       type: ViewerAPIMessage.UPDATE_VARIANT,
       payload: {
@@ -35,7 +58,6 @@ export class Visao {
   }
 
   public startAR(): void {
-    console.log('CALLING start AR!');
     this.executeAction({
       type: ViewerAPIMessage.START_AR,
     });
