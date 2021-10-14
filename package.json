@@ -1,6 +1,6 @@
 {
   "name": "@visao/viewer-api-test",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "API for visao viewers tests ",
   "cdn": "dist/index.umd.js",
   "main": "dist/index.js",
