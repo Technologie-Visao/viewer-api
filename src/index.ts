@@ -2,6 +2,15 @@ export enum ViewerAPIMessage {
   START_AR = 'START_AR',
   UPDATE_VARIANT = 'UPDATE_VARIANT',
   UPDATE_LANGUAGE = 'UPDATE_LANGUAGE',
+  SHOW_STEP = 'SHOW_STEP',
+  CLOSE_STEP = 'CLOSE_STEP',
+  RESET_CAMERA = 'RESET_CAMERA',
+  LOCK_CAMERA = 'LOCK_CAMERA',
+  UNLOCK_CAMERA = 'UNLOCK_CAMERA',
+  SHOW_HELP = 'SHOW_HELP',
+  CLOSE_HELP = 'CLOSE_HELP',
+  SHOW_QR = 'SHOW_QR',
+  CLOSE_QR = 'CLOSE_QR',
 }
 
 export interface UpdateLanguagePayload {
@@ -12,7 +21,14 @@ export interface UpdateModelVariantPayload {
   modelVariant: string;
 }
 
-export type Payload = UpdateModelVariantPayload | UpdateLanguagePayload;
+export interface ShowStepPayload {
+  step: string;
+}
+
+export type Payload =
+  | UpdateModelVariantPayload
+  | UpdateLanguagePayload
+  | ShowStepPayload;
 
 export interface Message {
   type: ViewerAPIMessage;
@@ -39,6 +55,21 @@ export class Visao {
     this.viewerElement = viewerElement;
   }
 
+  public showStep(step: string): void {
+    this.executeAction({
+      type: ViewerAPIMessage.SHOW_STEP,
+      payload: {
+        step,
+      },
+    });
+  }
+
+  public closeStep(): void {
+    this.executeAction({
+      type: ViewerAPIMessage.CLOSE_STEP,
+    });
+  }
+
   public changeLanguage(language: string): void {
     this.executeAction({
       type: ViewerAPIMessage.UPDATE_LANGUAGE,
@@ -60,6 +91,48 @@ export class Visao {
   public startAR(): void {
     this.executeAction({
       type: ViewerAPIMessage.START_AR,
+    });
+  }
+
+  public resetCamera(): void {
+    this.executeAction({
+      type: ViewerAPIMessage.RESET_CAMERA,
+    });
+  }
+
+  public lockCamera(): void {
+    this.executeAction({
+      type: ViewerAPIMessage.LOCK_CAMERA,
+    });
+  }
+
+  public unlockCamera(): void {
+    this.executeAction({
+      type: ViewerAPIMessage.UNLOCK_CAMERA,
+    });
+  }
+
+  public showHelp(): void {
+    this.executeAction({
+      type: ViewerAPIMessage.SHOW_HELP,
+    });
+  }
+
+  public closeHelp(): void {
+    this.executeAction({
+      type: ViewerAPIMessage.CLOSE_HELP,
+    });
+  }
+
+  public showQR(): void {
+    this.executeAction({
+      type: ViewerAPIMessage.SHOW_QR,
+    });
+  }
+
+  public closeQR(): void {
+    this.executeAction({
+      type: ViewerAPIMessage.CLOSE_QR,
     });
   }
 
