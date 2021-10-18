@@ -5,11 +5,22 @@ export enum ViewerStatus {
   LOADED = 'loaded',
 }
 
+const statusLevels = {
+  [ViewerStatus.UNMOUNTED]: 1,
+  [ViewerStatus.MOUNTED]: 2,
+  [ViewerStatus.LOADING]: 3,
+  [ViewerStatus.LOADED]: 4,
+};
+
 export enum ViewerAPIMessage {
   STATUS = 'STATUS',
   GET_STATUS = 'GET_STATUS',
   START_AR = 'START_AR',
+  GET_VARIANT = 'GET_VARIANT',
+  GET_AVAILABLE_VARIANTS = 'GET_AVAILABLE_VARIANTS',
   UPDATE_VARIANT = 'UPDATE_VARIANT',
+  GET_LANGUAGE = 'GET_LANGUAGE',
+  GET_AVAILABLE_LANGUAGES = 'GET_AVAILABLE_LANGUAGES',
   UPDATE_LANGUAGE = 'UPDATE_LANGUAGE',
   SHOW_STEP = 'SHOW_STEP',
   CLOSE_STEP = 'CLOSE_STEP',
@@ -20,6 +31,10 @@ export enum ViewerAPIMessage {
   CLOSE_HELP = 'CLOSE_HELP',
   SHOW_QR = 'SHOW_QR',
   CLOSE_QR = 'CLOSE_QR',
+  NEXT_STEP = 'NEXT_STEP',
+  PREVIOUS_STEP = 'PREVIOUS_STEP',
+  PLAY = 'PLAY',
+  PAUSE = 'PAUSE',
 }
 
 export interface StatusPayload {
@@ -49,16 +64,25 @@ export interface Message {
   payload?: Payload;
 }
 
+export type ViewerStatusListenerCallback = (status: ViewerStatus) => void;
+
+interface Callbacks {
+  [ViewerAPIMessage.STATUS]: ViewerStatusListenerCallback[];
+}
 export type ViewerElement = HTMLIFrameElement | null;
 
 export class Visao {
   private id: string;
   private viewerElement: ViewerElement;
+  private status: ViewerStatus = ViewerStatus.UNMOUNTED;
+  private callbacks: Callbacks = {
+    [ViewerAPIMessage.STATUS]: [],
+  };
 
   constructor(id: string) {
     this.id = id;
     this.viewerElement = document.getElementById(id) as HTMLIFrameElement;
-    this.logInvalidViewerElement();
+    this.listenToMessages();
   }
 
   public setViewerElementFromId(id: string): void {
@@ -70,102 +94,192 @@ export class Visao {
     this.viewerElement = viewerElement;
   }
 
-  public listenToViewerStatus(callback: (status: string) => void): void {
-    window.addEventListener('message', (event: MessageEvent) => {
-      const message = JSON.parse(event.data) as Message;
-
-      if (message.type === ViewerAPIMessage.STATUS) {
-        const { status } = message.payload as StatusPayload;
-        callback(status);
-      }
-    });
+  public listenToViewerStatus(callback: ViewerStatusListenerCallback): void {
+    this.callbacks[ViewerAPIMessage.STATUS].push(callback);
   }
 
   public showStep(step: string): void {
-    this.executeAction({
-      type: ViewerAPIMessage.SHOW_STEP,
-      payload: {
-        step,
+    this.executeAction(
+      {
+        type: ViewerAPIMessage.SHOW_STEP,
+        payload: {
+          step,
+        },
       },
-    });
+      ViewerStatus.LOADED,
+    );
   }
 
   public closeStep(): void {
-    this.executeAction({
-      type: ViewerAPIMessage.CLOSE_STEP,
-    });
+    this.executeAction(
+      {
+        type: ViewerAPIMessage.CLOSE_STEP,
+      },
+      ViewerStatus.LOADED,
+    );
+  }
+
+  public previousStep(): void {
+    this.executeAction(
+      {
+        type: ViewerAPIMessage.PREVIOUS_STEP,
+      },
+      ViewerStatus.LOADED,
+    );
+  }
+
+  public nextStep(): void {
+    this.executeAction(
+      {
+        type: ViewerAPIMessage.NEXT_STEP,
+      },
+      ViewerStatus.LOADED,
+    );
+  }
+
+  public play(): void {
+    this.executeAction(
+      {
+        type: ViewerAPIMessage.PLAY,
+      },
+      ViewerStatus.LOADED,
+    );
+  }
+
+  public pause(): void {
+    this.executeAction(
+      {
+        type: ViewerAPIMessage.PAUSE,
+      },
+      ViewerStatus.LOADED,
+    );
   }
 
   public changeLanguage(language: string): void {
-    this.executeAction({
-      type: ViewerAPIMessage.UPDATE_LANGUAGE,
-      payload: {
-        language,
+    this.executeAction(
+      {
+        type: ViewerAPIMessage.UPDATE_LANGUAGE,
+        payload: {
+          language,
+        },
       },
-    });
+      ViewerStatus.MOUNTED,
+    );
   }
 
   public showModelVariant(modelVariant: string): void {
-    this.executeAction({
-      type: ViewerAPIMessage.UPDATE_VARIANT,
-      payload: {
-        modelVariant,
+    this.executeAction(
+      {
+        type: ViewerAPIMessage.UPDATE_VARIANT,
+        payload: {
+          modelVariant,
+        },
       },
-    });
+      ViewerStatus.LOADED,
+    );
   }
 
   public startAR(): void {
-    this.executeAction({
-      type: ViewerAPIMessage.START_AR,
-    });
+    this.executeAction(
+      {
+        type: ViewerAPIMessage.START_AR,
+      },
+      ViewerStatus.LOADED,
+    );
   }
 
   public resetCamera(): void {
-    this.executeAction({
-      type: ViewerAPIMessage.RESET_CAMERA,
-    });
+    this.executeAction(
+      {
+        type: ViewerAPIMessage.RESET_CAMERA,
+      },
+      ViewerStatus.LOADED,
+    );
   }
 
   public lockCamera(): void {
-    this.executeAction({
-      type: ViewerAPIMessage.LOCK_CAMERA,
-    });
+    this.executeAction(
+      {
+        type: ViewerAPIMessage.LOCK_CAMERA,
+      },
+      ViewerStatus.LOADED,
+    );
   }
 
   public unlockCamera(): void {
-    this.executeAction({
-      type: ViewerAPIMessage.UNLOCK_CAMERA,
-    });
+    this.executeAction(
+      {
+        type: ViewerAPIMessage.UNLOCK_CAMERA,
+      },
+      ViewerStatus.MOUNTED,
+    );
   }
 
   public showHelp(): void {
-    this.executeAction({
-      type: ViewerAPIMessage.SHOW_HELP,
-    });
+    this.executeAction(
+      {
+        type: ViewerAPIMessage.SHOW_HELP,
+      },
+      ViewerStatus.MOUNTED,
+    );
   }
 
   public closeHelp(): void {
-    this.executeAction({
-      type: ViewerAPIMessage.CLOSE_HELP,
-    });
+    this.executeAction(
+      {
+        type: ViewerAPIMessage.CLOSE_HELP,
+      },
+      ViewerStatus.MOUNTED,
+    );
   }
 
   public showQR(): void {
-    this.executeAction({
-      type: ViewerAPIMessage.SHOW_QR,
-    });
+    this.executeAction(
+      {
+        type: ViewerAPIMessage.SHOW_QR,
+      },
+      ViewerStatus.MOUNTED,
+    );
   }
 
   public closeQR(): void {
-    this.executeAction({
-      type: ViewerAPIMessage.CLOSE_QR,
-    });
+    this.executeAction(
+      {
+        type: ViewerAPIMessage.CLOSE_QR,
+      },
+      ViewerStatus.MOUNTED,
+    );
   }
 
-  private executeAction(action: Message): void {
+  private handleIncomingMessage(event: MessageEvent): void {
+    const message = JSON.parse(event.data) as Message;
+
+    switch (message.type) {
+      case ViewerAPIMessage.STATUS: {
+        const { status } = message.payload as StatusPayload;
+        this.status = status;
+        for (const statusChangeNotifier of this.callbacks[
+          ViewerAPIMessage.STATUS
+        ]) {
+          statusChangeNotifier(status);
+        }
+        break;
+      }
+
+      default:
+      // NOOP
+    }
+  }
+
+  private executeAction(action: Message, statusNeeded?: ViewerStatus): void {
     this.logInvalidViewerElement();
+    this.logForInsufficientStatusLevel(statusNeeded);
 
     this.viewerElement?.contentWindow?.postMessage(JSON.stringify(action), '*');
+  }
+
+  private listenToMessages(): void {
+    window.addEventListener('message', this.handleIncomingMessage);
   }
 
   private logInvalidViewerElement(): void {
@@ -174,5 +288,20 @@ export class Visao {
         `Visao: Viewer HTML element cannot be found in the DOM with the "id" ${this.id}`,
       );
     }
+  }
+
+  private logForInsufficientStatusLevel(statusNeeded?: ViewerStatus): void {
+    if (
+      statusNeeded &&
+      !this.validateStatusHasReachedNeededLevel(statusNeeded)
+    ) {
+      console.warn(`Visao: The viewer is not yet ready for this action.`);
+    }
+  }
+
+  private validateStatusHasReachedNeededLevel(
+    statusNeeded: ViewerStatus,
+  ): boolean {
+    return statusLevels[statusNeeded] >= statusLevels[this.status];
   }
 }
