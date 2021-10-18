@@ -1,4 +1,6 @@
 export declare enum ViewerAPIMessage {
+    STATUS = "STATUS",
+    GET_STATUS = "GET_STATUS",
     START_AR = "START_AR",
     UPDATE_VARIANT = "UPDATE_VARIANT",
     UPDATE_LANGUAGE = "UPDATE_LANGUAGE",
@@ -33,6 +35,7 @@ export declare class Visao {
     constructor(id: string);
     setViewerElementFromId(id: string): void;
     setViewerElement(viewerElement: ViewerElement): void;
+    listenToViewerStatus(callback: (status: string) => void): void;
     showStep(step: string): void;
     closeStep(): void;
     changeLanguage(language: string): void;

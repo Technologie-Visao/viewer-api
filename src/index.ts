@@ -1,4 +1,6 @@
 export enum ViewerAPIMessage {
+  STATUS = 'STATUS',
+  GET_STATUS = 'GET_STATUS',
   START_AR = 'START_AR',
   UPDATE_VARIANT = 'UPDATE_VARIANT',
   UPDATE_LANGUAGE = 'UPDATE_LANGUAGE',
@@ -34,6 +36,7 @@ export interface Message {
   type: ViewerAPIMessage;
   payload?: Payload;
 }
+
 export type ViewerElement = HTMLIFrameElement | null;
 
 export class Visao {
@@ -53,6 +56,16 @@ export class Visao {
 
   public setViewerElement(viewerElement: ViewerElement): void {
     this.viewerElement = viewerElement;
+  }
+
+  public listenToViewerStatus(callback: (status: string) => void): void {
+    window.addEventListener('message', (event: MessageEvent) => {
+      const message = JSON.parse(event.data);
+
+      if (message.type === ViewerAPIMessage.STATUS) {
+        callback(message.status);
+      }
+    });
   }
 
   public showStep(step: string): void {
