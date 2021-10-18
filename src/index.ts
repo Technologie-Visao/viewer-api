@@ -257,12 +257,12 @@ export class Visao {
     switch (message.type) {
       case ViewerAPIMessage.STATUS: {
         const { status } = message.payload as StatusPayload;
+
         this.status = status;
-        for (const statusChangeNotifier of this.callbacks[
-          ViewerAPIMessage.STATUS
-        ]) {
-          statusChangeNotifier(status);
-        }
+        this.callbacks[ViewerAPIMessage.STATUS].forEach(
+          (callback: ViewerStatusListenerCallback) => callback(status),
+        );
+
         break;
       }
 
