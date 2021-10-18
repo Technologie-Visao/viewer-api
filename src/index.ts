@@ -251,7 +251,7 @@ export class Visao {
     );
   }
 
-  private handleIncomingMessage(event: MessageEvent): void {
+  private handleIncomingMessage = (event: MessageEvent): void => {
     const message = JSON.parse(event.data) as Message;
 
     switch (message.type) {
@@ -269,7 +269,7 @@ export class Visao {
       default:
       // NOOP
     }
-  }
+  };
 
   private executeAction(action: Message, statusNeeded?: ViewerStatus): void {
     this.logInvalidViewerElement();
