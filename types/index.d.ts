@@ -1,3 +1,9 @@
+export declare enum ViewerStatus {
+    UNMOUNTED = "unmounted",
+    MOUNTED = "mounted",
+    LOADING = "loading",
+    LOADED = "loaded"
+}
 export declare enum ViewerAPIMessage {
     STATUS = "STATUS",
     GET_STATUS = "GET_STATUS",
@@ -14,6 +20,9 @@ export declare enum ViewerAPIMessage {
     SHOW_QR = "SHOW_QR",
     CLOSE_QR = "CLOSE_QR"
 }
+export interface StatusPayload {
+    status: ViewerStatus;
+}
 export interface UpdateLanguagePayload {
     language: string;
 }
@@ -23,7 +32,7 @@ export interface UpdateModelVariantPayload {
 export interface ShowStepPayload {
     step: string;
 }
-export declare type Payload = UpdateModelVariantPayload | UpdateLanguagePayload | ShowStepPayload;
+export declare type Payload = StatusPayload | UpdateModelVariantPayload | UpdateLanguagePayload | ShowStepPayload;
 export interface Message {
     type: ViewerAPIMessage;
     payload?: Payload;

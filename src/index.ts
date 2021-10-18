@@ -1,3 +1,10 @@
+export enum ViewerStatus {
+  UNMOUNTED = 'unmounted',
+  MOUNTED = 'mounted',
+  LOADING = 'loading',
+  LOADED = 'loaded',
+}
+
 export enum ViewerAPIMessage {
   STATUS = 'STATUS',
   GET_STATUS = 'GET_STATUS',
@@ -15,6 +22,10 @@ export enum ViewerAPIMessage {
   CLOSE_QR = 'CLOSE_QR',
 }
 
+export interface StatusPayload {
+  status: ViewerStatus;
+}
+
 export interface UpdateLanguagePayload {
   language: string;
 }
@@ -28,6 +39,7 @@ export interface ShowStepPayload {
 }
 
 export type Payload =
+  | StatusPayload
   | UpdateModelVariantPayload
   | UpdateLanguagePayload
   | ShowStepPayload;
@@ -60,10 +72,11 @@ export class Visao {
 
   public listenToViewerStatus(callback: (status: string) => void): void {
     window.addEventListener('message', (event: MessageEvent) => {
-      const message = JSON.parse(event.data);
+      const message = JSON.parse(event.data) as Message;
 
       if (message.type === ViewerAPIMessage.STATUS) {
-        callback(message.status);
+        const { status } = message.payload as StatusPayload;
+        callback(status);
       }
     });
   }
