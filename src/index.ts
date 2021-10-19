@@ -82,7 +82,7 @@ export type ViewerElement = HTMLIFrameElement | null;
 
 export class Visao {
   private id: string;
-  private viewerElement: ViewerElement;
+  private viewerElement: ViewerElement = null;
   private status: ViewerStatus = ViewerStatus.UNMOUNTED;
   private callbacks: Callbacks = {
     [ViewerAPIMessage.STATUS]: [],
@@ -91,7 +91,6 @@ export class Visao {
 
   constructor(id: string) {
     this.id = id;
-    this.viewerElement = document.getElementById(id) as HTMLIFrameElement;
     this.listenToMessages();
   }
 
@@ -281,6 +280,12 @@ export class Visao {
         const { status } = message.payload as StatusPayload;
 
         this.status = status;
+        if (status === ViewerStatus.MOUNTED) {
+          this.setViewerElement(
+            document.getElementById(this.id) as HTMLIFrameElement,
+          );
+        }
+
         this.callbacks[ViewerAPIMessage.STATUS].forEach(
           (callback: ViewerStatusListenerCallback) => callback(status),
         );
