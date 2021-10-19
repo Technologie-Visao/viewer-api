@@ -8,8 +8,7 @@ export declare enum ViewerAPIMessage {
     STATUS = "STATUS",
     GET_STATUS = "GET_STATUS",
     START_AR = "START_AR",
-    GET_VARIANT = "GET_VARIANT",
-    GET_AVAILABLE_VARIANTS = "GET_AVAILABLE_VARIANTS",
+    GET_VARIANT_INFORMATION = "GET_VARIANT_INFORMATION",
     UPDATE_VARIANT = "UPDATE_VARIANT",
     GET_LANGUAGE_INFORMATION = "GET_LANGUAGE_INFORMATION",
     UPDATE_LANGUAGE = "UPDATE_LANGUAGE",
@@ -40,16 +39,21 @@ interface LanguageInformationPayload {
 export interface UpdateModelVariantPayload {
     modelVariant: string;
 }
+interface VariantInformationPayload {
+    modelVariant: string;
+    modelVariants: string[];
+}
 export interface ShowStepPayload {
     step: string;
 }
-export declare type Payload = StatusPayload | UpdateModelVariantPayload | UpdateLanguagePayload | LanguageInformationPayload | ShowStepPayload;
+export declare type Payload = StatusPayload | UpdateModelVariantPayload | VariantInformationPayload | UpdateLanguagePayload | LanguageInformationPayload | ShowStepPayload;
 export interface Message {
     type: ViewerAPIMessage;
     payload?: Payload;
 }
 export declare type ViewerStatusListenerCallback = (status: ViewerStatus) => void;
 export declare type GetLanguageInformationCallback = (languageInformation: LanguageInformationPayload) => void;
+export declare type GetVariantInformationCallback = (variantInformation: VariantInformationPayload) => void;
 export declare type ViewerElement = HTMLIFrameElement | null;
 export declare class Visao {
     private id;
@@ -69,6 +73,7 @@ export declare class Visao {
     getLanguageInformation(callback: GetLanguageInformationCallback): void;
     changeLanguage(language: string): void;
     showModelVariant(modelVariant: string): void;
+    getVariantInformation(callback: GetVariantInformationCallback): void;
     startAR(): void;
     resetCamera(): void;
     lockCamera(): void;

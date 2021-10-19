@@ -16,8 +16,7 @@ export enum ViewerAPIMessage {
   STATUS = 'STATUS',
   GET_STATUS = 'GET_STATUS',
   START_AR = 'START_AR',
-  GET_VARIANT = 'GET_VARIANT',
-  GET_AVAILABLE_VARIANTS = 'GET_AVAILABLE_VARIANTS',
+  GET_VARIANT_INFORMATION = 'GET_VARIANT_INFORMATION',
   UPDATE_VARIANT = 'UPDATE_VARIANT',
   GET_LANGUAGE_INFORMATION = 'GET_LANGUAGE_INFORMATION',
   UPDATE_LANGUAGE = 'UPDATE_LANGUAGE',
@@ -53,6 +52,11 @@ export interface UpdateModelVariantPayload {
   modelVariant: string;
 }
 
+interface VariantInformationPayload {
+  modelVariant: string;
+  modelVariants: string[];
+}
+
 export interface ShowStepPayload {
   step: string;
 }
@@ -60,6 +64,7 @@ export interface ShowStepPayload {
 export type Payload =
   | StatusPayload
   | UpdateModelVariantPayload
+  | VariantInformationPayload
   | UpdateLanguagePayload
   | LanguageInformationPayload
   | ShowStepPayload;
@@ -74,9 +79,14 @@ export type GetLanguageInformationCallback = (
   languageInformation: LanguageInformationPayload,
 ) => void;
 
+export type GetVariantInformationCallback = (
+  variantInformation: VariantInformationPayload,
+) => void;
+
 interface Callbacks {
   [ViewerAPIMessage.STATUS]: ViewerStatusListenerCallback[];
   [ViewerAPIMessage.GET_LANGUAGE_INFORMATION]: GetLanguageInformationCallback[];
+  [ViewerAPIMessage.GET_VARIANT_INFORMATION]: GetVariantInformationCallback[];
 }
 export type ViewerElement = HTMLIFrameElement | null;
 
@@ -87,6 +97,7 @@ export class Visao {
   private callbacks: Callbacks = {
     [ViewerAPIMessage.STATUS]: [],
     [ViewerAPIMessage.GET_LANGUAGE_INFORMATION]: [],
+    [ViewerAPIMessage.GET_VARIANT_INFORMATION]: [],
   };
 
   constructor(id: string) {
@@ -200,6 +211,16 @@ export class Visao {
     );
   }
 
+  public getVariantInformation(callback: GetVariantInformationCallback): void {
+    this.callbacks[ViewerAPIMessage.GET_VARIANT_INFORMATION].push(callback);
+    this.executeAction(
+      {
+        type: ViewerAPIMessage.GET_VARIANT_INFORMATION,
+      },
+      ViewerStatus.LOADED,
+    );
+  }
+
   public startAR(): void {
     this.executeAction(
       {
@@ -306,8 +327,17 @@ export class Visao {
         break;
       }
 
-      default:
-      // NOOP
+      case ViewerAPIMessage.GET_VARIANT_INFORMATION: {
+        const variantInformation = message.payload as VariantInformationPayload;
+
+        this.callbacks[ViewerAPIMessage.GET_VARIANT_INFORMATION].forEach(
+          (callback: GetVariantInformationCallback) =>
+            callback(variantInformation),
+        );
+
+        this.callbacks[ViewerAPIMessage.GET_VARIANT_INFORMATION] = [];
+        break;
+      }
     }
   };
 
