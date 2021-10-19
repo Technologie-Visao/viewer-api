@@ -19,8 +19,7 @@ export enum ViewerAPIMessage {
   GET_VARIANT = 'GET_VARIANT',
   GET_AVAILABLE_VARIANTS = 'GET_AVAILABLE_VARIANTS',
   UPDATE_VARIANT = 'UPDATE_VARIANT',
-  GET_LANGUAGE = 'GET_LANGUAGE',
-  GET_AVAILABLE_LANGUAGES = 'GET_AVAILABLE_LANGUAGES',
+  GET_LANGUAGE_INFORMATION = 'GET_LANGUAGE_INFORMATION',
   UPDATE_LANGUAGE = 'UPDATE_LANGUAGE',
   SHOW_STEP = 'SHOW_STEP',
   CLOSE_STEP = 'CLOSE_STEP',
@@ -62,6 +61,7 @@ export type Payload =
   | StatusPayload
   | UpdateModelVariantPayload
   | UpdateLanguagePayload
+  | LanguageInformationPayload
   | ShowStepPayload;
 
 export interface Message {
@@ -76,7 +76,7 @@ export type GetLanguageInformationCallback = (
 
 interface Callbacks {
   [ViewerAPIMessage.STATUS]: ViewerStatusListenerCallback[];
-  [ViewerAPIMessage.GET_LANGUAGE]: GetLanguageInformationCallback[];
+  [ViewerAPIMessage.GET_LANGUAGE_INFORMATION]: GetLanguageInformationCallback[];
 }
 export type ViewerElement = HTMLIFrameElement | null;
 
@@ -86,7 +86,7 @@ export class Visao {
   private status: ViewerStatus = ViewerStatus.UNMOUNTED;
   private callbacks: Callbacks = {
     [ViewerAPIMessage.STATUS]: [],
-    [ViewerAPIMessage.GET_LANGUAGE]: [],
+    [ViewerAPIMessage.GET_LANGUAGE_INFORMATION]: [],
   };
 
   constructor(id: string) {
@@ -168,10 +168,10 @@ export class Visao {
   public getLanguageInformation(
     callback: GetLanguageInformationCallback,
   ): void {
-    this.callbacks[ViewerAPIMessage.GET_LANGUAGE].push(callback);
+    this.callbacks[ViewerAPIMessage.GET_LANGUAGE_INFORMATION].push(callback);
     this.executeAction(
       {
-        type: ViewerAPIMessage.GET_LANGUAGE,
+        type: ViewerAPIMessage.GET_LANGUAGE_INFORMATION,
       },
       ViewerStatus.MOUNTED,
     );
@@ -288,19 +288,16 @@ export class Visao {
         break;
       }
 
-      case ViewerAPIMessage.GET_LANGUAGE: {
+      case ViewerAPIMessage.GET_LANGUAGE_INFORMATION: {
         const languageInformation =
           message.payload as LanguageInformationPayload;
 
-        this.callbacks[ViewerAPIMessage.GET_LANGUAGE].forEach(
+        this.callbacks[ViewerAPIMessage.GET_LANGUAGE_INFORMATION].forEach(
           (callback: GetLanguageInformationCallback) =>
             callback(languageInformation),
         );
 
-        this.callbacks[ViewerAPIMessage.GET_LANGUAGE] = [];
-
-        console.log('GET_LANGUAGE CALLED!');
-
+        this.callbacks[ViewerAPIMessage.GET_LANGUAGE_INFORMATION] = [];
         break;
       }
 

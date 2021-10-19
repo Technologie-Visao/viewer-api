@@ -11,8 +11,7 @@ export declare enum ViewerAPIMessage {
     GET_VARIANT = "GET_VARIANT",
     GET_AVAILABLE_VARIANTS = "GET_AVAILABLE_VARIANTS",
     UPDATE_VARIANT = "UPDATE_VARIANT",
-    GET_LANGUAGE = "GET_LANGUAGE",
-    GET_AVAILABLE_LANGUAGES = "GET_AVAILABLE_LANGUAGES",
+    GET_LANGUAGE_INFORMATION = "GET_LANGUAGE_INFORMATION",
     UPDATE_LANGUAGE = "UPDATE_LANGUAGE",
     SHOW_STEP = "SHOW_STEP",
     CLOSE_STEP = "CLOSE_STEP",
@@ -44,7 +43,7 @@ export interface UpdateModelVariantPayload {
 export interface ShowStepPayload {
     step: string;
 }
-export declare type Payload = StatusPayload | UpdateModelVariantPayload | UpdateLanguagePayload | ShowStepPayload;
+export declare type Payload = StatusPayload | UpdateModelVariantPayload | UpdateLanguagePayload | LanguageInformationPayload | ShowStepPayload;
 export interface Message {
     type: ViewerAPIMessage;
     payload?: Payload;
