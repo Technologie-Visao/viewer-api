@@ -45,6 +45,11 @@ export interface UpdateLanguagePayload {
   language: string;
 }
 
+interface LanguageInformationPayload {
+  language: string;
+  languages: string[];
+}
+
 export interface UpdateModelVariantPayload {
   modelVariant: string;
 }
@@ -65,9 +70,13 @@ export interface Message {
 }
 
 export type ViewerStatusListenerCallback = (status: ViewerStatus) => void;
+export type GetLanguageInformationCallback = (
+  languageInformation: LanguageInformationPayload,
+) => void;
 
 interface Callbacks {
   [ViewerAPIMessage.STATUS]: ViewerStatusListenerCallback[];
+  [ViewerAPIMessage.GET_LANGUAGE]: GetLanguageInformationCallback[];
 }
 export type ViewerElement = HTMLIFrameElement | null;
 
@@ -77,6 +86,7 @@ export class Visao {
   private status: ViewerStatus = ViewerStatus.UNMOUNTED;
   private callbacks: Callbacks = {
     [ViewerAPIMessage.STATUS]: [],
+    [ViewerAPIMessage.GET_LANGUAGE]: [],
   };
 
   constructor(id: string) {
@@ -152,6 +162,18 @@ export class Visao {
         type: ViewerAPIMessage.PAUSE,
       },
       ViewerStatus.LOADED,
+    );
+  }
+
+  public getLanguageInformation(
+    callback: GetLanguageInformationCallback,
+  ): void {
+    this.callbacks[ViewerAPIMessage.GET_LANGUAGE].push(callback);
+    this.executeAction(
+      {
+        type: ViewerAPIMessage.GET_LANGUAGE,
+      },
+      ViewerStatus.MOUNTED,
     );
   }
 
@@ -262,6 +284,22 @@ export class Visao {
         this.callbacks[ViewerAPIMessage.STATUS].forEach(
           (callback: ViewerStatusListenerCallback) => callback(status),
         );
+
+        break;
+      }
+
+      case ViewerAPIMessage.GET_LANGUAGE: {
+        const languageInformation =
+          message.payload as LanguageInformationPayload;
+
+        this.callbacks[ViewerAPIMessage.GET_LANGUAGE].forEach(
+          (callback: GetLanguageInformationCallback) =>
+            callback(languageInformation),
+        );
+
+        this.callbacks[ViewerAPIMessage.GET_LANGUAGE] = [];
+
+        console.log('GET_LANGUAGE CALLED!');
 
         break;
       }

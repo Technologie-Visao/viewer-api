@@ -34,6 +34,10 @@ export interface StatusPayload {
 export interface UpdateLanguagePayload {
     language: string;
 }
+interface LanguageInformationPayload {
+    language: string;
+    languages: string[];
+}
 export interface UpdateModelVariantPayload {
     modelVariant: string;
 }
@@ -46,6 +50,7 @@ export interface Message {
     payload?: Payload;
 }
 export declare type ViewerStatusListenerCallback = (status: ViewerStatus) => void;
+export declare type GetLanguageInformationCallback = (languageInformation: LanguageInformationPayload) => void;
 export declare type ViewerElement = HTMLIFrameElement | null;
 export declare class Visao {
     private id;
@@ -62,6 +67,7 @@ export declare class Visao {
     nextStep(): void;
     play(): void;
     pause(): void;
+    getLanguageInformation(callback: GetLanguageInformationCallback): void;
     changeLanguage(language: string): void;
     showModelVariant(modelVariant: string): void;
     startAR(): void;
@@ -79,4 +85,5 @@ export declare class Visao {
     private logForInsufficientStatusLevel;
     private validateStatusHasReachedNeededLevel;
 }
+export {};
 //# sourceMappingURL=index.d.ts.map
