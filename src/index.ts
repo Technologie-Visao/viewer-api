@@ -342,6 +342,6 @@ export class Visao {
   private validateStatusHasReachedNeededLevel(
     statusNeeded: ViewerStatus,
   ): boolean {
-    return statusLevels[statusNeeded] >= statusLevels[this.status];
+    return statusLevels[this.status] >= statusLevels[statusNeeded];
   }
 }
