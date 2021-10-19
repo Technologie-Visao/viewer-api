@@ -1,6 +1,6 @@
 {
   "name": "@visao/viewer-api-test",
-  "version": "0.0.9",
+  "version": "0.1.1",
   "description": "API for visao viewers tests ",
   "cdn": "dist/index.umd.js",
   "main": "dist/index.js",
@@ -23,7 +23,8 @@
     "build": "rollup --config ./rollup.config.js",
     "lint": "eslint \"*/**/*.{ts,js,json}\" --fix",
     "test:lint": "eslint \"*/**/*.{ts,js,json}\"",
-    "test:unit": "jest"
+    "test:unit": "jest",
+    "pub": "npm version patch --force && npm run build"
   },
   "repository": {
     "type": "git",
