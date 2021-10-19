@@ -27,8 +27,8 @@
     "version": "npm run build && git add .",
     "postversion": "git push && git push --tags",
     "patch": "npm version patch --force",
-    "minor": "npm version patch --force",
-    "major": "npm version patch --force"
+    "minor": "npm version minor --force",
+    "major": "npm version major --force"
   },
   "repository": {
     "type": "git",
