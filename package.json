@@ -1,5 +1,5 @@
 {
-  "name": "@visao/viewer-api-test",
+  "name": "@visao/viewer-api",
   "version": "0.1.8",
   "description": "API for visao viewers tests ",
   "cdn": "dist/index.umd.js",

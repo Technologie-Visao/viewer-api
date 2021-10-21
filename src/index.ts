@@ -90,10 +90,19 @@ interface Callbacks {
 }
 export type ViewerElement = HTMLIFrameElement | null;
 
+// interface Callbacks {
+//   [key: string]: Function[];
+//   // [ViewerAPIMessage.STATUS]: ViewerStatusListenerCallback[];
+//   // [ViewerAPIMessage.GET_LANGUAGE_INFORMATION]: GetLanguageInformationCallback[];
+//   // [ViewerAPIMessage.GET_VARIANT_INFORMATION]: GetVariantInformationCallback[];
+// }
+
 export class Visao {
   private id: string;
   private viewerElement: ViewerElement = null;
   private status: ViewerStatus = ViewerStatus.UNMOUNTED;
+
+  // TODO -> Refactor this into a class a bit like a resolver
   private callbacks: Callbacks = {
     [ViewerAPIMessage.STATUS]: [],
     [ViewerAPIMessage.GET_LANGUAGE_INFORMATION]: [],
