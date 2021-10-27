@@ -15,5 +15,5 @@ we welcome any feedbacks, questions, bug reporting and feature requests you may 
 Simply go to the [issues page](https://github.com/Technologie-Visao/viewer-api/issues) and open
 an issue assigning the proper tag to it.
 
-![issues tags][https://github.com/Technologie-Visao/viewer-api/tree/master/docs/visao_api_issues_tags.png]
+![issues tags](https://github.com/Technologie-Visao/viewer-api/raw/master/docs/visao_api_issues_tags.png)
 
